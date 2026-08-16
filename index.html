@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThenOS Flasher — Installiere ThenOS auf deinem TheOne</title>
+<meta name="description" content="Installiere ThenOS direkt aus dem Browser auf deinem TheOne — kein Software-Download, keine Kommandozeile.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='2' width='20' height='28' rx='4' fill='%230b0f17' stroke='%232dd4bf' stroke-width='2'/%3E%3Crect x='9' y='6' width='14' height='18' rx='1.5' fill='%232dd4bf' opacity='0.85'/%3E%3Ccircle cx='16' cy='27' r='1.4' fill='%232dd4bf'/%3E%3C/svg%3E">
+<script type="module" src="https://cdn.jsdelivr.net/npm/esp-web-tools@10/dist/web/install-button.js"></script>
+<style>
+  :root{
+    --bg-0:#0a0e16;
+    --bg-1:#0f1420;
+    --card:#151b28;
+    --card-border:#232c3d;
+    --text-0:#eef2f8;
+    --text-1:#a8b3c7;
+    --text-2:#6b768c;
+    --accent:#2dd4bf;
+    --accent-2:#818cf8;
+    --accent-ink:#04231f;
+    --danger:#f87171;
+    --radius-lg:22px;
+    --radius-md:14px;
+    --radius-sm:9px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(60vw 40vh at 15% -5%, rgba(45,212,191,0.16), transparent 60%),
+      radial-gradient(50vw 40vh at 100% 10%, rgba(129,140,248,0.14), transparent 60%),
+      var(--bg-0);
+    color:var(--text-0);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  a{color:var(--accent);}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+
+  /* ---- Nav ---- */
+  nav.top{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;max-width:1080px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:0.2px;font-size:17px;}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 0 14px rgba(45,212,191,0.7);}
+  .brand small{color:var(--text-2);font-weight:500;font-size:13px;}
+  nav.top a.gh{color:var(--text-1);text-decoration:none;font-size:14px;display:flex;align-items:center;gap:6px;border:1px solid var(--card-border);padding:7px 13px;border-radius:99px;transition:all .15s ease;}
+  nav.top a.gh:hover{border-color:var(--accent);color:var(--text-0);}
+
+  /* ---- Hero ---- */
+  header.hero{padding:56px 0 40px;}
+  .hero-grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:56px;align-items:center;}
+  @media (max-width:860px){.hero-grid{grid-template-columns:1fr;gap:40px;}}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--accent);background:rgba(45,212,191,0.08);border:1px solid rgba(45,212,191,0.25);padding:6px 12px;border-radius:99px;margin-bottom:20px;}
+  h1{font-size:44px;line-height:1.08;margin:0 0 18px;letter-spacing:-0.5px;}
+  h1 .grad{background:linear-gradient(100deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .lede{font-size:17px;color:var(--text-1);max-width:52ch;margin:0 0 30px;}
+
+  esp-web-install-button{display:inline-block;}
+  .install-btn{
+    appearance:none;border:none;cursor:pointer;
+    font-family:inherit;font-size:16px;font-weight:700;
+    padding:15px 28px;border-radius:99px;
+    background:linear-gradient(100deg,var(--accent),#22c3ad);
+    color:var(--accent-ink);
+    display:inline-flex;align-items:center;gap:10px;
+    box-shadow:0 8px 28px -8px rgba(45,212,191,0.55);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .install-btn:hover{transform:translateY(-1px);box-shadow:0 12px 34px -8px rgba(45,212,191,0.7);}
+  .install-btn:active{transform:translateY(0);}
+  .install-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-bottom:14px;}
+  .version-badge{font-size:13px;color:var(--text-2);background:var(--card);border:1px solid var(--card-border);padding:8px 14px;border-radius:99px;font-variant-numeric:tabular-nums;}
+  .browser-note{font-size:13.5px;color:var(--text-2);margin-top:4px;}
+  .browser-note b{color:var(--text-1);}
+  [slot="unsupported"],[slot="not-allowed"]{
+    display:block;font-size:14.5px;color:var(--danger);background:rgba(248,113,113,0.08);
+    border:1px solid rgba(248,113,113,0.3);padding:14px 16px;border-radius:var(--radius-md);max-width:46ch;
+  }
+
+  /* ---- Phone mockup ---- */
+  .phone-wrap{display:flex;justify-content:center;}
+  .phone-shell{filter:drop-shadow(0 30px 60px rgba(0,0,0,0.55));animation:float 6s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+  .glow{fill:var(--accent);opacity:0;animation:blink 2.6s ease-in-out infinite;}
+  @keyframes blink{0%,100%{opacity:0.15;}50%{opacity:0.95;}}
+
+  /* ---- Sections ---- */
+  section{padding:54px 0;}
+  .section-head{max-width:60ch;margin:0 0 34px;}
+  .section-head .eyebrow{margin-bottom:14px;}
+  h2{font-size:28px;margin:0 0 10px;letter-spacing:-0.3px;}
+  .section-sub{color:var(--text-1);font-size:15.5px;margin:0;}
+
+  /* Steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  @media (max-width:760px){.steps{grid-template-columns:1fr;}}
+  .step{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:26px;position:relative;}
+  .step .num{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-ink);font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:15px;}
+  .step h3{font-size:16.5px;margin:0 0 8px;}
+  .step p{font-size:14.5px;color:var(--text-1);margin:0;}
+
+  /* Features */
+  .feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media (max-width:860px){.feature-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:520px){.feature-grid{grid-template-columns:1fr;}}
+  .feature{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-md);padding:20px;transition:border-color .15s ease, transform .15s ease;}
+  .feature:hover{border-color:rgba(45,212,191,0.4);transform:translateY(-2px);}
+  .feature .icon{width:38px;height:38px;border-radius:10px;background:rgba(45,212,191,0.1);display:flex;align-items:center;justify-content:center;color:var(--accent);margin-bottom:14px;}
+  .feature .icon svg{width:20px;height:20px;}
+  .feature h3{font-size:15px;margin:0 0 6px;}
+  .feature p{font-size:13.5px;color:var(--text-1);margin:0;line-height:1.45;}
+
+  /* Hardware */
+  .hw-card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:30px;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;}
+  @media (max-width:760px){.hw-card{grid-template-columns:1fr;}}
+  .hw-list{list-style:none;margin:0;padding:0;display:grid;gap:12px;}
+  .hw-list li{display:flex;justify-content:space-between;font-size:14.5px;border-bottom:1px dashed var(--card-border);padding-bottom:10px;}
+  .hw-list li span:first-child{color:var(--text-2);}
+  .hw-list li span:last-child{color:var(--text-0);font-weight:600;}
+
+  /* FAQ */
+  details{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-md);padding:16px 20px;margin-bottom:12px;}
+  summary{cursor:pointer;font-weight:600;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"+";color:var(--accent);font-size:20px;font-weight:400;}
+  details[open] summary::after{content:"−";}
+  details p{color:var(--text-1);font-size:14px;margin:12px 0 0;}
+
+  footer{padding:40px 0 60px;border-top:1px solid var(--card-border);margin-top:20px;}
+  .footer-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;color:var(--text-2);font-size:13px;}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="brand"><span class="dot"></span>ThenOS <small>Flasher</small></div>
+  <a class="gh" href="https://github.com/DaniAeschbach/ThenOS-Flasher" target="_blank" rel="noopener">Quellcode dieser Seite ↗</a>
+</nav>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">⚡ Läuft direkt im Browser</span>
+        <h1>Installiere <span class="grad">ThenOS</span><br>auf deinem TheOne</h1>
+        <p class="lede">Ein Kabel, ein Klick — deine Firmware wird direkt aus dem Browser aufgespielt.
+        Keine Software, keine Kommandozeile, keine Installation nötig.</p>
+
+        <div class="install-row">
+          <esp-web-install-button manifest="manifest.json">
+            <button slot="activate" class="install-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M6.5 10.5 12 16l5.5-5.5"/><path d="M4 20h16"/></svg>
+              ThenOS installieren
+            </button>
+            <span slot="unsupported">Dein Browser unterstützt Web Serial nicht. Öffne diese Seite in <b>Google Chrome</b> oder <b>Microsoft Edge</b> auf dem Desktop (Windows/macOS/Linux/ChromeOS).</span>
+            <span slot="not-allowed">Diese Seite muss über HTTPS aufgerufen werden, um dein TheOne zu erreichen.</span>
+          </esp-web-install-button>
+          <span class="version-badge" id="versionBadge">Version wird geladen…</span>
+        </div>
+        <p class="browser-note"><b>Voraussetzung:</b> Chrome oder Edge (Desktop) · TheOne per USB-Kabel angeschlossen.</p>
+      </div>
+
+      <div class="phone-wrap">
+        <svg class="phone-shell" width="220" height="300" viewBox="0 0 220 300" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="6" width="208" height="288" rx="30" fill="#12161f" stroke="#232c3d" stroke-width="2"/>
+          <rect x="20" y="24" width="180" height="232" rx="10" fill="#0a0e16"/>
+          <rect x="20" y="24" width="180" height="232" rx="10" fill="url(#screenGrad)" opacity="0.9"/>
+          <defs>
+            <linearGradient id="screenGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#101827"/>
+              <stop offset="1" stop-color="#0a0e16"/>
+            </linearGradient>
+          </defs>
+          <!-- status bar -->
+          <text x="32" y="42" fill="#eef2f8" font-size="10" font-family="monospace" font-weight="700">09:41</text>
+          <g transform="translate(160,33)" stroke="#a8b3c7" stroke-width="1.3" fill="none" stroke-linecap="round">
+            <path d="M0 8 L3 2 L6 8"/>
+            <rect x="10" y="2" width="8" height="6" rx="1.5"/>
+          </g>
+          <!-- app grid -->
+          <g transform="translate(32,58)">
+            <!-- row 1 -->
+            <g>
+              <rect width="46" height="46" rx="12" fill="#1a2130"/>
+              <path d="M23 12c-6.6 0-12 5.2-12 11.6 0 8.7 12 20.4 12 20.4s12-11.7 12-20.4C35 17.2 29.6 12 23 12z" transform="translate(0,-5) scale(0.62)" fill="none" stroke="#2dd4bf" stroke-width="2.4" stroke-linejoin="round" transform-origin="23 23"/>
+              <circle cx="23" cy="20" r="4.5" fill="none" stroke="#2dd4bf" stroke-width="2"/>
+            </g>
+            <g transform="translate(58,0)">
+              <rect width="46" height="46" rx="12" fill="#1a2130"/>
+              <path d="M14 20a13 13 0 0 1 18 0M18 24a7.5 7.5 0 0 1 10 0M22 28a2.6 2.6 0 0 1 2 0" transform="translate(0,2)" fill="none" stroke="#818cf8" stroke-width="2.2" stroke-linecap="round"/>
+            </g>
+            <g transform="translate(116,0)">
+              <rect width="46" height="46" rx="12" fill="#1a2130"/>
+              <circle cx="23" cy="23" r="10" fill="none" stroke="#facc15" stroke-width="2.2"/>
+              <path d="M23 16v7l5 3" fill="none" stroke="#facc15" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <!-- row 2 -->
+            <g transform="translate(0,58)">
+              <rect width="46" height="46" rx="12" fill="#1a2130"/>
+              <path d="M15 30c2-10 6-16 8-16s6 6 8 16" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="23" cy="16" r="4" fill="none" stroke="#38bdf8" stroke-width="2.2"/>
+            </g>
+            <g transform="translate(58,58)">
+              <rect width="46" height="46" rx="12" fill="#1a2130"/>
+              <rect x="13" y="12" width="20" height="22" rx="2.5" fill="none" stroke="#2dd4bf" stroke-width="2"/>
+              <line x1="16" y1="17" x2="30" y2="17" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round"/>
+              <line x1="16" y1="23" x2="20" y2="23" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round"/>
+              <line x1="24" y1="23" x2="28" y2="23" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round"/>
+              <line x1="16" y1="28" x2="20" y2="28" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round"/>
+              <line x1="24" y1="28" x2="28" y2="28" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round"/>
+            </g>
+            <g transform="translate(116,58)">
+              <rect width="46" height="46" rx="12" fill="#1a2130"/>
+              <rect x="12" y="12" width="22" height="22" rx="4" fill="none" stroke="#4ade80" stroke-width="2.2"/>
+              <rect x="17" y="17" width="4" height="4" fill="#4ade80"/>
+              <rect x="21" y="21" width="4" height="4" fill="#4ade80"/>
+              <rect x="25" y="21" width="4" height="4" fill="#4ade80"/>
+            </g>
+          </g>
+          <!-- live blink dot like the maps position -->
+          <circle class="glow" cx="55" cy="116" r="4"/>
+          <!-- side buttons -->
+          <rect x="0" y="90" width="6" height="20" rx="3" fill="#232c3d"/>
+          <rect x="0" y="120" width="6" height="34" rx="3" fill="#232c3d"/>
+          <rect x="214" y="100" width="6" height="26" rx="3" fill="#232c3d"/>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <section id="how">
+    <div class="section-head">
+      <span class="eyebrow">So funktioniert's</span>
+      <h2>In drei Schritten startklar</h2>
+      <p class="section-sub">Kein SDK, kein Treiber-Zoo, kein Terminal — das Flashen läuft komplett im Browser über die Web-Serial-Schnittstelle.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <h3>TheOne per USB verbinden</h3>
+        <p>Ein normales USB-Kabel reicht. Windows/macOS erkennen den seriellen Port automatisch, ohne separaten Treiber.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h3>„ThenOS installieren“ klicken</h3>
+        <p>Der Browser fragt nach dem Port — auswählen, verbinden, fertig. Ein Fortschrittsbalken zeigt den Flash-Vorgang live an.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h3>Automatischer Neustart</h3>
+        <p>Sobald der Flash-Vorgang durch ist, startet TheOne von selbst neu — direkt mit der neuen ThenOS-Version.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="section-head">
+      <span class="eyebrow">Was ThenOS mitbringt</span>
+      <h2>Ein kleines, schnelles Phone-OS</h2>
+      <p class="section-sub">Jede App ist sowohl per Touch als auch über die drei physischen Tasten bedienbar.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 8.5a16 16 0 0 1 20 0"/><path d="M5.5 12.5a11 11 0 0 1 13 0"/><path d="M9 16.5a6 6 0 0 1 6 0"/><circle cx="12" cy="20" r="1.2" fill="currentColor" stroke="none"/></svg></div>
+        <h3>Wi-Fi</h3>
+        <p>Scannen, verbinden, Netzwerke speichern, Auto-Join.</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10-5 5V2l5 5L7 17"/></svg></div>
+        <h3>Bluetooth</h3>
+        <p>Geräte in der Nähe finden und automatisch wiederverbinden.</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-6-3V4l6 3 6-3 6 3v13l-6-3-6 3z"/><path d="M9 7v13M15 4v13"/></svg></div>
+        <h3>Maps</h3>
+        <p>Offline-Karten der Schweiz von der SD-Karte, mit Wegpunkten.</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.4-1.5A4 4 0 0 0 6 16.5"/></svg></div>
+        <h3>Weather</h3>
+        <p>Aktuelle Bedingungen per Open-Meteo, sobald WLAN verbunden ist.</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h.01M12 9h.01M17 9h.01M7 13h.01M12 13h.01M17 13h.01M7 17h5"/></svg></div>
+        <h3>Diagnostics</h3>
+        <p>Selbsttests für Display, Touch, Tasten, Wi-Fi, Bluetooth, GPS.</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7a2 2 0 0 1 2-2h5l2 2h5a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z"/></svg></div>
+        <h3>Storage</h3>
+        <p>Interner Speicher plus microSD-Verwaltung inkl. Formatieren.</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+        <h3>Alarm &amp; Timer</h3>
+        <p>Täglicher Wecker plus Countdown-Timer.</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h4v4H4zM12 8h4v4h-4zM16 12h4v4h-4zM4 16h8v4H4z"/></svg></div>
+        <h3>Snake</h3>
+        <p>Der Klassiker — per Touch-D-Pad oder mit den Tasten steuerbar.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="hardware">
+    <div class="section-head">
+      <span class="eyebrow">Hardware</span>
+      <h2>Gebaut für TheOne</h2>
+      <p class="section-sub">ThenOS ist auf die exakte Hardware von TheOne zugeschnitten.</p>
+    </div>
+    <div class="hw-card">
+      <ul class="hw-list">
+        <li><span>Chip</span><span>ESP32-S3</span></li>
+        <li><span>Display</span><span>240×320 ILI9341 (SPI)</span></li>
+        <li><span>Touch</span><span>FT6206 kapazitiv</span></li>
+        <li><span>Bedienung</span><span>Touch + 3 Tasten</span></li>
+        <li><span>Storage</span><span>interner Flash + microSD</span></li>
+        <li><span>Funk</span><span>Wi-Fi + Bluetooth</span></li>
+      </ul>
+      <p style="color:var(--text-1);font-size:14.5px;margin:0;">
+        Alle Pin-Belegungen liegen zentral in einer Konfigurationsdatei der Firmware —
+        TheOne-Geräte sind werkseitig exakt danach verdrahtet, du musst dafür nichts einstellen.
+        Der Flasher schreibt Bootloader, Partitionstabelle und Firmware in einem Rutsch auf das Gerät.
+      </p>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="section-head">
+      <span class="eyebrow">Fragen</span>
+      <h2>Kurz &amp; knapp</h2>
+    </div>
+    <details>
+      <summary>Welcher Browser funktioniert?</summary>
+      <p>Jeder Chromium-basierte Desktop-Browser: Google Chrome oder Microsoft Edge, unter Windows, macOS, Linux oder ChromeOS. Safari und Firefox unterstützen die dafür nötige Web-Serial-API nicht, und auf dem Handy funktioniert es generell nicht, da kein Browser dort USB-Seriell-Zugriff erlaubt.</p>
+    </details>
+    <details>
+      <summary>Muss ich vorher etwas installieren?</summary>
+      <p>Nein. Das Flashen läuft komplett im Browser. Falls dein Betriebssystem den seriellen Port trotzdem nicht automatisch erkennt, hilft in seltenen Fällen ein CP210x-USB-Treiber (auf aktuellem Windows/macOS in der Regel nicht nötig).</p>
+    </details>
+    <details>
+      <summary>Gehen meine gespeicherten Netzwerke/Alarme beim Flashen verloren?</summary>
+      <p>Ein normales Update lässt deine gespeicherten Einstellungen unangetastet. Nur ein bewusstes „vollständig löschen“ vor der Installation (vom Flasher separat angeboten) setzt TheOne auf Werkszustand zurück.</p>
+    </details>
+    <details>
+      <summary>Wie oft gibt es neue Versionen?</summary>
+      <p>Immer wenn eine neue ThenOS-Version veröffentlicht wird, aktualisiert sich diese Seite automatisch — es ist immer die aktuell freigegebene Version verlinkt.</p>
+    </details>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap footer-row">
+    <span>ThenOS Firmware für TheOne</span>
+    <span id="footerVersion">—</span>
+  </div>
+</footer>
+
+<script>
+  fetch('manifest.json').then(r => r.json()).then(m => {
+    const v = m.version || 'unbekannt';
+    document.getElementById('versionBadge').textContent = 'Aktuelle Version: ' + v;
+    document.getElementById('footerVersion').textContent = 'Version ' + v;
+  }).catch(() => {
+    document.getElementById('versionBadge').textContent = 'Version unbekannt';
+  });
+</script>
+
+</body>
+</html>
