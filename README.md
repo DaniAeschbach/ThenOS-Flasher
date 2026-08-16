@@ -1,7 +1,7 @@
 # ThenOS Flasher
 
 Web-based installer for [ThenOS](https://github.com/DaniAeschbach/ThenOS), the firmware
-for **TheOne**. Runs entirely in the browser via the Web Serial API (Chrome/Edge, desktop) —
+for **Theone**. Runs entirely in the browser via the Web Serial API (Chrome/Edge, desktop) —
 no software install needed.
 
 👉 **[Open the flasher](https://daniaeschbach.github.io/ThenOS-Flasher/)**
