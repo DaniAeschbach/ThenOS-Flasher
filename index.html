@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ThenOS Flasher — Installiere ThenOS auf deinem Theone</title>
-<meta name="description" content="Installiere ThenOS direkt aus dem Browser auf deinem Theone — kein Software-Download, keine Kommandozeile.">
+<title>ThenOS Update — die neueste Firmware für dein Theone</title>
+<meta name="description" content="Lade die aktuelle ThenOS-Firmware herunter, leg sie auf die Speicherkarte und aktualisiere Theone direkt am Gerät.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='2' width='20' height='28' rx='4' fill='%230b0f17' stroke='%232dd4bf' stroke-width='2'/%3E%3Crect x='9' y='6' width='14' height='18' rx='1.5' fill='%232dd4bf' opacity='0.85'/%3E%3Ccircle cx='16' cy='27' r='1.4' fill='%232dd4bf'/%3E%3C/svg%3E">
-<script type="module" src="https://cdn.jsdelivr.net/npm/esp-web-tools@10/dist/web/install-button.js"></script>
 <style>
   :root{
     --bg-0:#0a0e16;
@@ -56,9 +55,8 @@
   h1 .grad{background:linear-gradient(100deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent;}
   .lede{font-size:17px;color:var(--text-1);max-width:52ch;margin:0 0 30px;}
 
-  esp-web-install-button{display:inline-block;}
   .install-btn{
-    appearance:none;border:none;cursor:pointer;
+    appearance:none;border:none;cursor:pointer;text-decoration:none;
     font-family:inherit;font-size:16px;font-weight:700;
     padding:15px 28px;border-radius:99px;
     background:linear-gradient(100deg,var(--accent),#22c3ad);
@@ -102,10 +100,7 @@
   .version-badge{font-size:13px;color:var(--text-2);background:var(--card);border:1px solid var(--card-border);padding:8px 14px;border-radius:99px;font-variant-numeric:tabular-nums;}
   .browser-note{font-size:13.5px;color:var(--text-2);margin-top:4px;}
   .browser-note b{color:var(--text-1);}
-  [slot="unsupported"],[slot="not-allowed"]{
-    display:block;font-size:14.5px;color:var(--danger);background:rgba(248,113,113,0.08);
-    border:1px solid rgba(248,113,113,0.3);padding:14px 16px;border-radius:var(--radius-md);max-width:46ch;
-  }
+  code{background:var(--card);border:1px solid var(--card-border);border-radius:5px;padding:1px 6px;font-size:0.92em;}
 
   /* ---- Phone mockup ---- */
   .phone-wrap{display:flex;justify-content:center;}
@@ -122,8 +117,9 @@
   .section-sub{color:var(--text-1);font-size:15.5px;margin:0;}
 
   /* Steps */
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-  @media (max-width:760px){.steps{grid-template-columns:1fr;}}
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  @media (max-width:980px){.steps{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.steps{grid-template-columns:1fr;}}
   .step{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius-lg);padding:26px;position:relative;}
   .step .num{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-ink);font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:15px;}
   .step h3{font-size:16.5px;margin:0 0 8px;}
@@ -173,18 +169,15 @@
       <div>
         <span class="eyebrow">⚡ Läuft direkt im Browser</span>
         <h1>Installiere <span class="grad">ThenOS</span><br>auf deinem Theone</h1>
-        <p class="lede">Ein Kabel, ein Klick — deine Firmware wird direkt aus dem Browser aufgespielt.
-        Keine Software, keine Kommandozeile, keine Installation nötig.</p>
+        <p class="lede">Firmware herunterladen, auf die Speicherkarte legen, am Gerät auf
+        „Update now“ tippen. Theone installiert selbst und startet danach neu — kein Kabel-Gefummel,
+        keine Software, keine Kommandozeile.</p>
 
         <div class="install-row">
-          <esp-web-install-button manifest="manifest.json">
-            <button slot="activate" class="install-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M6.5 10.5 12 16l5.5-5.5"/><path d="M4 20h16"/></svg>
-              ThenOS installieren
-            </button>
-            <span slot="unsupported">Dein Browser unterstützt Web Serial nicht. Öffne diese Seite in <b>Google Chrome</b> oder <b>Microsoft Edge</b> auf dem Desktop (Windows/macOS/Linux/ChromeOS).</span>
-            <span slot="not-allowed">Diese Seite muss über HTTPS aufgerufen werden, um dein Theone zu erreichen.</span>
-          </esp-web-install-button>
+          <a class="install-btn" id="downloadBtn" href="firmware/firmware.bin" download="firmware.bin">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M6.5 10.5 12 16l5.5-5.5"/><path d="M4 20h16"/></svg>
+            firmware.bin herunterladen
+          </a>
           <button class="logs-btn" id="logsBtn">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-5-6-5"/><path d="M12 19h8"/></svg>
             Serial-Logs
@@ -202,7 +195,7 @@
           </div>
           <pre class="console-out" id="consoleOut"></pre>
         </div>
-        <p class="browser-note"><b>Voraussetzung:</b> Chrome oder Edge (Desktop) · Theone per USB-Kabel angeschlossen.</p>
+        <p class="browser-note"><b>Du brauchst:</b> eine microSD-Karte in Theone · ein USB-Kabel, um die Datei zu übertragen.</p>
       </div>
 
       <div class="phone-wrap">
@@ -276,24 +269,32 @@
   <section id="how">
     <div class="section-head">
       <span class="eyebrow">So funktioniert's</span>
-      <h2>In drei Schritten startklar</h2>
-      <p class="section-sub">Kein SDK, kein Treiber-Zoo, kein Terminal — das Flashen läuft komplett im Browser über die Web-Serial-Schnittstelle.</p>
+      <h2>In vier Schritten aktualisiert</h2>
+      <p class="section-sub">Theone bringt das Update selbst auf — der PC liefert nur die Datei.</p>
     </div>
     <div class="steps">
       <div class="step">
         <div class="num">1</div>
-        <h3>Theone per USB verbinden</h3>
-        <p>Ein normales USB-Kabel reicht. Windows/macOS erkennen den seriellen Port automatisch, ohne separaten Treiber.</p>
+        <h3>firmware.bin herunterladen</h3>
+        <p>Oben auf den Button tippen. Die Datei ist rund 1,7 MB gross und immer die aktuell freigegebene Version.</p>
       </div>
       <div class="step">
         <div class="num">2</div>
-        <h3>„ThenOS installieren“ klicken</h3>
-        <p>Der Browser fragt nach dem Port — auswählen, verbinden, fertig. Ein Fortschrittsbalken zeigt den Flash-Vorgang live an.</p>
+        <h3>Karte am PC öffnen</h3>
+        <p>An Theone <b>Einstellungen → Storage → Share with PC</b> wählen. Die Speicherkarte erscheint am PC als
+        Wechseldatenträger, so wie ein Kartenleser.</p>
       </div>
       <div class="step">
         <div class="num">3</div>
-        <h3>Automatischer Neustart</h3>
-        <p>Sobald der Flash-Vorgang durch ist, startet Theone von selbst neu — direkt mit der neuen ThenOS-Version.</p>
+        <h3>Datei aufs Laufwerk kopieren</h3>
+        <p><code>firmware.bin</code> direkt in den obersten Ordner der Karte legen — nicht in einen Unterordner.
+        Danach am PC auswerfen und an Theone auf <b>Done</b> tippen.</p>
+      </div>
+      <div class="step">
+        <div class="num">4</div>
+        <h3>Am Gerät aktualisieren</h3>
+        <p><b>Einstellungen → Update</b> zeigt, was installiert ist und was auf der Karte liegt. Ein Tipp auf
+        <b>Update now</b> — Theone installiert, zeigt einen Fortschrittsbalken und startet neu.</p>
       </div>
     </div>
   </section>
@@ -377,20 +378,26 @@
       <h2>Kurz &amp; knapp</h2>
     </div>
     <details>
-      <summary>Welcher Browser funktioniert?</summary>
-      <p>Jeder Chromium-basierte Desktop-Browser: Google Chrome oder Microsoft Edge, unter Windows, macOS, Linux oder ChromeOS. Safari und Firefox unterstützen die dafür nötige Web-Serial-API nicht, und auf dem Handy funktioniert es generell nicht, da kein Browser dort USB-Seriell-Zugriff erlaubt.</p>
+      <summary>Brauche ich einen bestimmten Browser?</summary>
+      <p>Zum Herunterladen der Datei nicht — das geht überall. Nur der Knopf <b>Serial-Logs</b> braucht einen
+      Chromium-Browser (Chrome oder Edge auf dem Desktop), weil er die Web-Serial-Schnittstelle nutzt.</p>
     </details>
     <details>
-      <summary>Muss ich vorher etwas installieren?</summary>
-      <p>In der Regel nein — das Flashen läuft komplett im Browser. Theone meldet sich über einen
-      <b>WCH CH343</b> USB-Seriell-Chip an. Aktuelle Windows- und macOS-Versionen bringen den passenden
-      Treiber bereits mit; falls dein System den Port nicht erkennt, installiere den
-      <a href="https://www.wch-ic.com/downloads/CH341SER_EXE.html" target="_blank" rel="noopener">CH343/CH341-Treiber von WCH</a>
-      und stecke das Kabel neu ein.</p>
+      <summary>Kann dabei etwas kaputtgehen?</summary>
+      <p>Nein. Theone hat zwei Firmware-Speicherbereiche und beschreibt immer den gerade <i>nicht</i> laufenden.
+      Erst wenn die neue Version vollständig und fehlerfrei geschrieben ist, wird umgeschaltet. Ein Abbruch —
+      auch ein Stromausfall mittendrin — lässt die bisherige Version unangetastet.</p>
     </details>
     <details>
-      <summary>Gehen meine gespeicherten Netzwerke/Alarme beim Flashen verloren?</summary>
-      <p>Ein normales Update lässt deine gespeicherten Einstellungen unangetastet. Nur ein bewusstes „vollständig löschen“ vor der Installation (vom Flasher separat angeboten) setzt Theone auf Werkszustand zurück.</p>
+      <summary>Gehen meine Netzwerke und Alarme verloren?</summary>
+      <p>Nein. Ein Update tauscht nur die Firmware; gespeicherte Einstellungen liegen in einem eigenen
+      Speicherbereich und bleiben erhalten.</p>
+    </details>
+    <details>
+      <summary>Wo muss die Datei genau hin?</summary>
+      <p>In den obersten Ordner der Karte, also <code>firmware.bin</code> direkt neben die anderen Ordner —
+      nicht in einen Unterordner. Nach dem Update benennt Theone sie in <code>firmware.installed.bin</code> um,
+      damit dasselbe Update nicht immer wieder angeboten wird.</p>
     </details>
     <details>
       <summary>Wie oft gibt es neue Versionen?</summary>
